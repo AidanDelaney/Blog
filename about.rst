@@ -1,5 +1,0 @@
----
-title: About
----
-
-Aidan graduated in 2002 from (NUI Maynooth)[http://www.nuim.ie] in Ireland. He obtained his postgraduate training in teaching in higher education at the (University of Brighton)[http://www.brighton.ac.uk] in England where he now works as a senior lecturer. He teaches a range of courses including computer games development to undergraduates and theoretical computer science to postgraduates. His main research interest is in diagrams spanning the gamut from diagram creation through formal representation of diagrams to reasoning using diagrams. Papers, including those on his diagrammatic research, can be found on the publications page. His his Ph.D. thesis on "Relationships between Diagrammatic Logic and Formal Language Theory" is available in (PDF format)[https://docs.google.com/open?id=0B18FG6I8GhB0b2hmT1lTc1hoeWM].
