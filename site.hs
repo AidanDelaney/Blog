@@ -5,7 +5,7 @@ import           Hakyll
 
 myTransportConfiguration :: Configuration
 myTransportConfiguration = defaultConfiguration
-    { deployCommand   = "rsync --checksum -ave 'ssh' _site/* aidan@www.phoric.eu:~/aidan/www"
+    { deployCommand   = "rsync --checksum -ave 'ssh' _site/* aidan@www.phoric.eu:~/www"
     }
 
 myFeedConfiguration :: FeedConfiguration
