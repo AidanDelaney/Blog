@@ -1,21 +1,26 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-import           Data.Monoid (mappend)
+import           Data.Monoid (mappend, mconcat)
 import           Hakyll
+
+myTransportConfiguration :: Configuration
+myTransportConfiguration = defaultConfiguration
+    { deployCommand   = "rsync --checksum -ave 'ssh' _site/* aidan@www.phoric.eu:~/aidan/www"
+    }
 
 myFeedConfiguration :: FeedConfiguration
 myFeedConfiguration = FeedConfiguration
     { feedTitle       = "Ontology Engineering with Diagrams"
     , feedDescription = "Technical posts regarding ontology engineering with diagrams and WebProtégé"
     , feedAuthorName  = "Aidan Delaney"
-    , feedAuthorEmail = "aidan@ontologyengineering.org"
-    , feedRoot        = "http://www.ontologyengineering.org/~ajd9/blog/"
+    , feedAuthorEmail = "aidan@phoric.eu"
+    , feedRoot        = "http://www.phoric.eu/"
     }
 
 
 --------------------------------------------------------------------------------
 main :: IO ()
-main = hakyll $ do
+main = hakyllWith myTransportConfiguration $ do
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
@@ -24,7 +29,7 @@ main = hakyll $ do
         route   idRoute
         compile compressCssCompiler
 
-    match (fromList ["about.markdown", "contact.markdown"]) $ do
+    match (fromList ["about.markdown", "contact.markdown", publications.markdown]) $ do
         route   $ setExtension "html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
@@ -34,6 +39,7 @@ main = hakyll $ do
         route $ setExtension "html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
+	    >>= saveSnapshot "content"
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
@@ -66,12 +72,17 @@ main = hakyll $ do
                 >>= loadAndApplyTemplate "templates/default.html" indexCtx
                 >>= relativizeUrls
 
+    -- Render RSS feed (from Eric)
     create ["rss.xml"] $ do
         route idRoute
         compile $ do
             let feedCtx = postCtx `mappend` bodyField "description"
-            posts <- recentFirst =<< loadAll "posts/*"
+            posts   <- recentFirst =<<  loadAllSnapshots "posts/*" "content"
             renderRss myFeedConfiguration feedCtx posts
+
+--        loadAllSnapshots "posts/*" "content"
+--        >>= fmap (take 10) . recentFirst
+--        >>= renderAtom (myFeedConfiguration "All posts") feedContext
 
     match "templates/*" $ compile templateCompiler
 
