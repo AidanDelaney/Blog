@@ -15,10 +15,10 @@ import Hakyll.Core.Compiler (unsafeCompiler)
 import Text.Pandoc
 
 htmlize :: String -> String
-htmlize latex = writeHtmlString def (readLaTeX def latex)
+htmlize latex = latex -- writeHtmlString def (readLaTeX def latex)
 
 getField :: Entry.T -> String -> String
-getField entry field = fromJust (lookup field (Entry.fields (Entry.lowerCaseFieldNames entry)))
+getField entry field = htmlize (fromJust (lookup field (Entry.fields (Entry.lowerCaseFieldNames entry))))
 
 getFields :: Entry.T -> [String] -> [String]
 getFields entry xs = map (htmlize . getField entry) xs
@@ -37,11 +37,19 @@ getProceedings entry = Item {itemIdentifier = id,
     id = fromFilePath (Entry.identifier entry)
     body = intercalate ", " (getFields entry ["editor", "title", "year"])
 
+getConf :: Entry.T -> Item String
+getConf entry = Item {itemIdentifier = id,
+                          itemBody = body}
+  where
+    id = fromFilePath (Entry.identifier entry)
+    body = intercalate ", " (getFields entry ["author", "title", "booktitle", "pages", "year"])
+
 cite :: Entry.T -> Item String
 cite entry =
   case (Entry.entryType entry) of
     "article" -> getArticle entry
     "proceedings" -> getProceedings entry
+    "inproceedings" -> getConf entry
 
 getCitations :: String -> IO [Entry.T]
 getCitations fname =

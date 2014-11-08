@@ -64,9 +64,11 @@ main = hakyllWith myTransportConfiguration $ do
       compile $ do
         books <- getCiteCompiler "/home/aidan/SparkleShare/Proposals/books.bib"
         journals <- getCiteCompiler "/home/aidan/SparkleShare/Proposals/journals.bib"
+        confs <- getCiteCompiler "/home/aidan/SparkleShare/Proposals/conferences.bib"
         let pubCtx =
               listField "books" defaultContext (return books) `mappend`
               listField "journals" defaultContext (return journals) `mappend`
+              listField "confs" defaultContext (return confs) `mappend`
               defaultContext
         makeItem ""
           >>= loadAndApplyTemplate "templates/publications.html" pubCtx
