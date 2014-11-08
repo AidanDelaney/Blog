@@ -3,6 +3,8 @@
 import           Data.Monoid (mappend, mconcat)
 import           Hakyll
 
+import Publications
+
 myTransportConfiguration :: Configuration
 myTransportConfiguration = defaultConfiguration
     { deployCommand   = "rsync --checksum -ave 'ssh' _site/* aidan@www.phoric.eu:~/www"
@@ -29,7 +31,7 @@ main = hakyllWith myTransportConfiguration $ do
         route   idRoute
         compile compressCssCompiler
 
-    match (fromList ["about.markdown", "contact.markdown", "publications.markdown"]) $ do
+    match (fromList ["about.markdown", "contact.markdown"]) $ do
         route   $ setExtension "html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
@@ -39,7 +41,7 @@ main = hakyllWith myTransportConfiguration $ do
         route $ setExtension "html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
-	    >>= saveSnapshot "content"
+            >>= saveSnapshot "content"
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
@@ -57,6 +59,19 @@ main = hakyllWith myTransportConfiguration $ do
                 >>= loadAndApplyTemplate "templates/default.html" archiveCtx
                 >>= relativizeUrls
 
+    create ["publications.html"] $ do
+      route idRoute
+      compile $ do
+        books <- getCiteCompiler "/home/aidan/SparkleShare/Proposals/books.bib"
+        journals <- getCiteCompiler "/home/aidan/SparkleShare/Proposals/journals.bib"
+        let pubCtx =
+              listField "books" defaultContext (return books) `mappend`
+              listField "journals" defaultContext (return journals) `mappend`
+              defaultContext
+        makeItem ""
+          >>= loadAndApplyTemplate "templates/publications.html" pubCtx
+          >>= loadAndApplyTemplate "templates/default.html" pubCtx
+          >>= relativizeUrls
 
     match "index.html" $ do
         route idRoute
