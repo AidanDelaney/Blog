@@ -14,8 +14,13 @@ import Hakyll.Core.Compiler (unsafeCompiler)
 
 import Text.Pandoc
 
+paraToPlain :: Block -> Block
+paraToPlain (Para x) = Plain x
+
 htmlize :: String -> String
-htmlize latex = latex -- writeHtmlString def (readLaTeX def latex)
+htmlize latex = writeHtmlString def p
+  where
+    p = topDown paraToPlain (readLaTeX def latex)
 
 getField :: Entry.T -> String -> String
 getField entry field = htmlize (fromJust (lookup field (Entry.fields (Entry.lowerCaseFieldNames entry))))
