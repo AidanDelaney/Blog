@@ -26,7 +26,7 @@ getField :: Entry.T -> String -> String
 getField entry field = htmlize (fromJust (lookup field (Entry.fields (Entry.lowerCaseFieldNames entry))))
 
 getFields :: Entry.T -> [String] -> [String]
-getFields entry xs = map (htmlize . getField entry) xs
+getFields entry xs = map (getField entry) xs
 
 getArticle :: Entry.T -> Item String
 getArticle entry = Item {itemIdentifier = id,
