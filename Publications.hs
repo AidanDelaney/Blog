@@ -5,6 +5,7 @@ import qualified Text.BibTeX.Entry as Entry
 import qualified Text.ParserCombinators.Parsec as Parsec
 
 import Data.List (intercalate)
+import Data.String.Utils (replace)
 
 import Control.Monad (liftM)
 import Data.Maybe (fromJust)
@@ -28,26 +29,34 @@ getField entry field = htmlize (fromJust (lookup field (Entry.fields (Entry.lowe
 getFields :: Entry.T -> [String] -> [String]
 getFields entry xs = map (getField entry) xs
 
+getAuthor :: Entry.T -> String
+getAuthor entry = (replace "Aidan Delaney" "<strong>Aidan Delaney</strong>") (getField entry "author")
+
+getEditor :: Entry.T -> String
+getEditor entry = (replace "Aidan Delaney" "<strong>Aidan Delaney</strong>") (getField entry "editor")
+
 getArticle :: Entry.T -> Item String
 getArticle entry = Item {itemIdentifier = id,
                           itemBody = body}
   where
     id = fromFilePath (Entry.identifier entry)
-    body = intercalate ", " (getFields entry ["author", "title", "journal", "pages", "year"])
+    body = getAuthor entry ++ ", " ++ (intercalate ", " (getFields entry ["title", "journal", "pages", "year"]))
 
 getProceedings :: Entry.T -> Item String
 getProceedings entry = Item {itemIdentifier = id,
                               itemBody = body}
   where
     id = fromFilePath (Entry.identifier entry)
-    body = intercalate ", " (getFields entry ["editor", "title", "year"])
+    body = getEditor entry ++ ", "
+           ++ (intercalate ", " (getFields entry ["title", "series", "year"]))
 
 getConf :: Entry.T -> Item String
 getConf entry = Item {itemIdentifier = id,
                           itemBody = body}
   where
     id = fromFilePath (Entry.identifier entry)
-    body = intercalate ", " (getFields entry ["author", "title", "booktitle", "pages", "year"])
+    body = getAuthor entry ++ ", "
+           ++ (intercalate ", " (getFields entry ["title", "booktitle", "pages", "year"]))
 
 cite :: Entry.T -> Item String
 cite entry =
