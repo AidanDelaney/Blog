@@ -7,7 +7,7 @@ import Publications
 
 myTransportConfiguration :: Configuration
 myTransportConfiguration = defaultConfiguration
-    { deployCommand   = "rsync --checksum -ave 'ssh' _site/* aidan@www.phoric.eu:~/www"
+    { deployCommand   = "rsync --checksum -ave 'ssh' _site/* aidan@phoric.eu:~/www"
     }
 
 myFeedConfiguration :: FeedConfiguration
@@ -24,6 +24,10 @@ myFeedConfiguration = FeedConfiguration
 main :: IO ()
 main = hakyllWith myTransportConfiguration $ do
     match "images/*" $ do
+        route   idRoute
+        compile copyFileCompiler
+
+    match "homework/*" $ do
         route   idRoute
         compile copyFileCompiler
 

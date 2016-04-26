@@ -64,12 +64,13 @@ cite entry =
     "article" -> getArticle entry
     "proceedings" -> getProceedings entry
     "inproceedings" -> getConf entry
+    _ -> error (show entry)
 
 getCitations :: String -> IO [Entry.T]
 getCitations fname =
   Parsec.parseFromFile (Parsec.skipMany Parsec.space >> Parse.file) fname >>= either reportError return
   where
-    reportError = error "Moo"
+    reportError = error ("Moo" ++ fname)
 
 listCitations :: IO [Entry.T] -> IO [Item String]
 listCitations es = liftM (map cite) es
