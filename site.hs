@@ -90,7 +90,7 @@ main = hakyllWith myTransportConfiguration $ do
              csl <- load $ fromFilePath "csl/acm-sig-proceedings-long-author-list.csl"
              bib <- load $ fromFilePath "bib/all.bib"
              html <- loadAndApplyTemplate "templates/publications.html" (referencesContext csl) bib
-             return $ Item "publications.html" (itemBody html)
+             relativizeUrls (Item "publications.html" (itemBody html))
 
     -- Render RSS feed (from Eric)
     create ["rss.xml"] $ do
